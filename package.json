@@ -1,0 +1,1 @@
+{ "name": "rankengine", "version": "0.1.0", "type": "module", "bin": { "rankengine": "src/cli.js" }, "engines": { "node": ">=22" } }

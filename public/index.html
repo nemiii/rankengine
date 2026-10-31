@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rankengine</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Cpath d='M8 22l5-6 4 3 7-9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#14181f;--muted:#5b6472;--line:#e3e6eb;--accent:#0f766e;--accent-soft:#e6f4f2;--warn:#b45309;--warn-soft:#fdf3e6;--bad:#b91c1c;--bad-soft:#fdecec;--good:#15803d;--good-soft:#e9f7ee;--radius:10px;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d1117;--panel:#151b23;--ink:#e6e9ee;--muted:#9aa4b2;--line:#262e39;--accent:#2dd4bf;--accent-soft:#12302d;--warn:#f59e0b;--warn-soft:#2c2112;--bad:#f87171;--bad-soft:#2d1616;--good:#4ade80;--good-soft:#132a1c;color-scheme:dark}}
+:root[data-theme=dark]{--bg:#0d1117;--panel:#151b23;--ink:#e6e9ee;--muted:#9aa4b2;--line:#262e39;--accent:#2dd4bf;--accent-soft:#12302d;--warn:#f59e0b;--warn-soft:#2c2112;--bad:#f87171;--bad-soft:#2d1616;--good:#4ade80;--good-soft:#132a1c;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}code{font:12px ui-monospace,Menlo,monospace;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 5px;word-break:break-all}
+.layout{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+aside{background:var(--panel);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;padding:0 8px 14px}
+.site{font-size:12px;color:var(--muted);padding:0 8px 12px;border-bottom:1px solid var(--line);margin-bottom:8px;overflow:hidden;text-overflow:ellipsis}
+nav a{display:block;padding:8px 10px;border-radius:8px;color:var(--ink);text-decoration:none}
+nav a:hover{background:var(--bg)}nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+aside .spacer{flex:1}
+main{padding:28px 32px;max-width:1180px;width:100%}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:16px;margin:0 0 10px}.sub{color:var(--muted);margin:0 0 20px}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px}
+.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.kpi .v{font-size:26px;font-weight:700}.kpi .l{color:var(--muted);font-size:12px}
+button,.btn{font:inherit;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+button:hover{border-color:var(--muted)}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme=dark] button.primary,:root:not([data-theme=light]) button.primary{color:#04201d}
+@media (prefers-color-scheme:light){:root:not([data-theme=dark]) button.primary{color:#fff}}
+button:disabled{opacity:.5;cursor:default}button.sm{padding:3px 8px;font-size:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:500;font-size:12px}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;background:var(--bg);border:1px solid var(--line)}
+.pill.good{background:var(--good-soft);color:var(--good);border-color:transparent}.pill.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}.pill.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}.pill.acc{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.grade{font-size:44px;font-weight:800;line-height:1}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+textarea{min-height:90px;resize:vertical}label{display:block;font-size:12px;color:var(--muted);margin:12px 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{display:inline-flex;gap:6px;align-items:center;padding:3px 4px 3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.chip button{border:0;background:none;padding:0 6px;color:inherit}
+.steps{display:flex;gap:6px;margin:0 0 18px;flex-wrap:wrap}.steps button{border-radius:999px}.steps button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
+.muted{color:var(--muted)}.empty{color:var(--muted);text-align:center;padding:28px}
+.choice{text-align:left;display:block;width:100%;padding:16px}.choice.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+pre.log{white-space:pre-wrap;font:12px ui-monospace,Menlo,monospace;max-height:260px;overflow:auto;margin:0}
+#toast{position:fixed;right:20px;bottom:20px;width:min(520px,calc(100vw - 40px));display:none;z-index:20}
+#modal{position:fixed;inset:0;background:rgb(0 0 0 / .45);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:30}
+#modal .card{max-width:820px;width:100%}.article h1{font-size:22px}.article img{max-width:100%}
+.switch{position:relative;width:38px;height:22px;flex:none}.switch input{opacity:0;width:0;height:0}.switch span{position:absolute;inset:0;background:var(--line);border-radius:999px;cursor:pointer;transition:.15s}
+.switch span:before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s}.switch input:checked+span{background:var(--accent)}.switch input:checked+span:before{transform:translateX(16px)}
+.setting{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.setting:last-child{border-bottom:0}
+.spin{width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .7s linear infinite;display:inline-block}@keyframes s{to{transform:rotate(1turn)}}
+@media (max-width:860px){.layout{grid-template-columns:1fr}aside{position:static;height:auto}main{padding:20px 16px}.g4,.g3,.g2{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.g4,.g3,.g2{grid-template-columns:1fr}table{display:block;overflow-x:auto}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand"><svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M8 22l5-6 4 3 7-9" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>rankengine</div>
+    <div class="site" id="site">No project</div>
+    <nav id="nav"></nav>
+    <div class="spacer"></div>
+    <button id="theme" class="sm">Theme: auto</button>
+  </aside>
+  <main id="main"></main>
+</div>
+<div id="toast" class="card"><div class="row" style="justify-content:space-between"><b id="toast-t"></b><button class="sm" onclick="toast.style.display='none'">Close</button></div><pre class="log" id="toast-b"></pre></div>
+<div id="modal" onclick="if(event.target===this)this.style.display='none'"><div class="card" id="modal-c"></div></div>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const toast = $("#toast");
+let D = {}, busy = false, onboardStep = 0, aivStep = 0;
+
+const SECTIONS = [
+  ["home", "Home"], ["analytics", "Analytics"], ["ai-visibility", "AI Search Visibility"], ["technical", "Technical SEO"],
+  ["audit", "Website Audit"], ["content", "Keywords & Content"], ["settings", "Settings"],
+];
+const FIX_LABELS = { optimizeForAiSearch: "Optimize for AI Search", optimizeTitle: "Optimize title", optimizeDescription: "Optimize description", addOpenGraph: "Add Open Graph tag", addCanonical: "Add canonical tag", modifyLinkTarget: "Modify link target", addLinkTitle: "Add link title", addImageAlt: "Add image alt tag", removeBrokenLinks: "Remove broken links", addInternalLinks: "Add internal links" };
+
+// ── theme ──
+const THEMES = ["auto", "light", "dark"];
+function applyTheme(t) { if (t === "auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t; $("#theme").textContent = `Theme: ${t}`; }
+let theme = "auto"; try { theme = localStorage.getItem("re-theme") || "auto"; } catch {}
+applyTheme(theme);
+$("#theme").onclick = () => { theme = THEMES[(THEMES.indexOf(theme) + 1) % 3]; applyTheme(theme); try { localStorage.setItem("re-theme", theme); } catch {} };
+
+// ── data + actions ──
+async function refresh() { D = await (await fetch("/app/data")).json(); render(); }
+async function run(cmd, args = [], label) {
+  if (busy) return;
+  busy = true; render();
+  toast.style.display = "block"; $("#toast-t").innerHTML = `<span class="spin"></span> ${esc(label || cmd)}…`; $("#toast-b").textContent = "";
+  try {
+    const r = await (await fetch("/app/run", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ cmd, args }) })).json();
+    $("#toast-t").textContent = `${r.ok ? "Done" : "Failed"}: ${label || cmd}`; $("#toast-b").textContent = r.output || r.error || "";
+    return r;
+  } finally { busy = false; await refresh(); }
+}
+async function saveProject(patch) { await fetch("/app/project", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(patch) }); await refresh(); }
+async function saveData(name, value) { await fetch("/app/save", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name, value }) }); await refresh(); }
+const B = (label, onclick, cls = "") => `<button class="${cls}" ${busy ? "disabled" : ""} onclick="${esc(onclick)}">${esc(label)}</button>`;
+
+// ── layout ──
+const route = () => location.hash.slice(1) || "home";
+window.onhashchange = render;
+function render() {
+  const p = D.project;
+  $("#site").textContent = p ? p.url.replace(/^https?:\/\//, "") : "No project";
+  const r = p ? route() : "onboarding";
+  $("#nav").innerHTML = (p ? [["onboarding", "Onboarding"], ...SECTIONS] : [["onboarding", "Onboarding"]])
+    .map(([id, l]) => `<a href="#${id}" class="${r === id ? "on" : ""}">${l}</a>`).join("");
+  const view = { onboarding, home, analytics, "ai-visibility": aiVisibility, technical, audit, content, settings }[r] ?? home;
+  $("#main").innerHTML = view();
+}
+const header = (t, sub, actions = "") => `<div class="head"><div><h1>${t}</h1><p class="sub">${sub}</p></div><div class="row">${actions}</div></div>`;
+
+// ── Onboarding ──
+function onboarding() {
+  const p = D.project;
+  if (!p) return header("Welcome", "What is your website? rankengine scans it and drafts your business profile.") +
+    `<div class="card"><label>Website</label><div class="row"><input id="url" placeholder="example.com" style="flex:1">${B("Scan website", "run('init',[$('#url').value],'Scanning website')", "primary")}</div>
+     <p class="muted">Needs <code>ANTHROPIC_API_KEY</code> in the server's environment.</p></div>`;
+  const steps = ["Business", "Audience & Competitors", "Analytics", "Site Integration", "Blog Post Settings", "Publishing"];
+  const field = (k, l, ta) => `<label>${l}</label>${ta ? `<textarea id="f-${k}">${esc(p[k])}</textarea>` : `<input id="f-${k}" value="${esc(p[k])}">`}`;
+  const chips = (k, ph) => `<div class="row"><input id="add-${k}" placeholder="${ph}" style="flex:1">${B("Add", `addChip('${k}')`)}</div>
+    <div class="chips">${(p[k] ?? []).map((x, i) => `<span class="chip">${esc(x.url ?? x.name ?? x)}<button aria-label="Remove" onclick="removeChip('${k}',${i})">×</button></span>`).join("")}</div>`;
+  const bodies = [
+    () => field("name", "Business name") + field("country", "Primary country of operation") + field("language", "Language") + field("description", "Description", 1) + field("productTiers", "Product tiers", 1),
+    () => `<h2>Target audiences</h2><p class="muted">Better audience understanding improves content relevance.</p>${chips("audiences", "e.g. Plant managers")}
+           <h2 style="margin-top:20px">Competitors</h2><p class="muted">Competitors are mined for keywords they rank for.</p>${chips("competitors", "competitor.com")}`,
+    () => `<h2>Google Search Console</h2><p class="muted">Optional. Export Performance data from Search Console as CSV (columns page, query, clicks, impressions, position) and import it:</p>
+           <code>node src/cli.js import-gsc ~/Downloads/gsc.csv</code><p class="muted">Keyword research and articles work without it; rewrites need it.</p>`,
+    () => integrationBlock(),
+    () => field("writerNotes", "Writer notes (optional)", 1) + `<label>Knowledge base</label><p class="muted">Add up to 25 .md, .txt, .csv or .json files to <code>data/knowledge/</code>. Writers only state facts found there or in your description.</p>
+           <label>Open Graph image URL (optional)</label><input id="f-ogImage" value="${esc(p.ogImage)}">`,
+    () => `<div class="grid g2">${[["auto", "Auto publish", "Publishes one eligible article per run (schedule it Mon–Sat), tracks it and rewrites from Search Console feedback."], ["manual", "Manual publish", "You review and publish each article yourself."]]
+           .map(([m, t, d]) => `<button class="choice card ${p.publishMode === m ? "on" : ""}" onclick="saveProject({publishMode:'${m}'})"><b>${t}</b>${m === "auto" ? ' <span class="pill acc">Recommended</span>' : ""}<p class="muted">${d}</p></button>`).join("")}</div>`,
+  ];
+  return header("Onboarding", `Step ${onboardStep + 1} of 6`) +
+    `<div class="steps">${steps.map((s, i) => `<button class="${i === onboardStep ? "on" : ""}" onclick="saveStep();onboardStep=${i};render()">${i + 1}. ${s}</button>`).join("")}</div>
+     <div class="card">${bodies[onboardStep]()}</div>
+     <div class="row"><button ${onboardStep ? "" : "disabled"} onclick="saveStep();onboardStep--;render()">Back</button>
+     ${onboardStep < 5 ? `<button class="primary" onclick="saveStep().then(()=>{onboardStep++;render()})">Continue</button>` : B("Complete — research 5 keywords & write 2 articles", "finishOnboarding()", "primary")}</div>`;
+}
+async function saveStep() {
+  const patch = {};
+  for (const k of ["name", "country", "language", "description", "productTiers", "writerNotes", "ogImage", "blogPath"]) { const el = $(`#f-${k}`); if (el) patch[k] = el.value; }
+  if (Object.keys(patch).length) await saveProject(patch);
+}
+function addChip(k) { const v = $(`#add-${k}`).value.trim(); if (!v) return; const list = [...(D.project[k] ?? [])]; list.push(k === "competitors" ? { name: v.replace(/^https?:\/\//, "").replace(/\/$/, ""), url: v.includes(".") ? (v.startsWith("http") ? v : `https://${v}`) : null } : v); saveProject({ [k]: list }); }
+function removeChip(k, i) { const list = [...D.project[k]]; list.splice(i, 1); saveProject({ [k]: list }); }
+async function finishOnboarding() { if ((await run("keywords", [5], "Researching keywords"))?.ok) { await run("write", [2], "Writing first 2 articles"); location.hash = "content"; } }
+
+// ── Home ──
+function home() {
+  const a = D.articles ?? [], v = D.visibility?.latest, au = D.audit;
+  const n = (s) => a.filter((x) => x.status === s).length;
+  const next = [
+    !au && ["Run your website audit", "#audit"], !(D.fixes ?? []).length && au && ["Generate technical SEO fixes", "#technical"],
+    !a.length && ["Research keywords", "#content"], n("ready") && ["Publish ready articles", "#content"],
+    !v && ["Start AI visibility tracking", "#ai-visibility"], !D.gsc && ["Import Search Console data", "#analytics"],
+  ].filter(Boolean);
+  return header(`${esc(D.project.name)}`, esc(D.project.description)) +
+    `<div class="grid g4">${[["Audit grade", au?.grade ?? "–"], ["AI visibility", v ? `${v.visibility}%` : "–"], ["Keywords", a.length], ["Published", n("published")]]
+      .map(([l, x]) => `<div class="card kpi"><div class="v">${x}</div><div class="l">${l}</div></div>`).join("")}</div>
+     <div class="card"><h2>Next steps</h2>${next.length ? `<table>${next.map(([t, h]) => `<tr><td>${t}</td><td style="text-align:right"><a href="${h}">Open</a></td></tr>`).join("")}</table>` : '<p class="muted">All set. Keep tracking and publishing.</p>'}</div>`;
+}
+
+// ── Analytics ──
+function analytics() {
+  if (!D.gsc) return header("Analytics", "Search performance from Google Search Console") +
+    `<div class="card"><h2>Import Search Console data</h2><p class="muted">Export Performance data as CSV with columns page, query, clicks, impressions, position, then run:</p><code>node src/cli.js import-gsc path/to/export.csv</code></div>`;
+  const by = {};
+  for (const r of D.gsc.rows) { const x = (by[r.page] ??= { clicks: 0, impressions: 0, w: 0, queries: 0 }); x.clicks += r.clicks; x.impressions += r.impressions; x.w += (r.position ?? 0) * r.impressions; x.queries++; }
+  const rows = Object.entries(by).sort((a, b) => b[1].impressions - a[1].impressions);
+  const tot = rows.reduce((t, [, x]) => ({ c: t.c + x.clicks, i: t.i + x.impressions }), { c: 0, i: 0 });
+  return header("Analytics", `Imported ${new Date(D.gsc.importedAt).toLocaleString()}`, B("Rewrite under-performing articles", "run('rewrite',[],'Rewriting articles')", "primary")) +
+    `<div class="grid g3">${[["Clicks", tot.c], ["Impressions", tot.i], ["CTR", tot.i ? `${((tot.c / tot.i) * 100).toFixed(1)}%` : "–"]].map(([l, v]) => `<div class="card kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("")}</div>
+     <div class="card"><table><tr><th>Page</th><th>Clicks</th><th>Impressions</th><th>Avg position</th><th>Queries</th></tr>
+     ${rows.map(([pg, x]) => `<tr><td>${esc(pg)}</td><td>${x.clicks}</td><td>${x.impressions}</td><td>${x.impressions ? (x.w / x.impressions).toFixed(1) : "–"}</td><td>${x.queries}</td></tr>`).join("")}</table></div>`;
+}
+
+// ── AI Search Visibility ──
+function aiVisibility() {
+  const v = D.visibility?.latest, topics = D.topics ?? [], prompts = D.prompts ?? [];
+  const sub = "How often AI assistants mention your brand, how you rank against competitors, and which sources they cite.";
+  if (v && aivStep !== 1 && aivStep !== 2) {
+    const max = Math.max(1, ...v.shareOfVoice.map(([, c]) => c));
+    return header("AI Search Visibility", sub, B("Re-run tracking", "run('track',[],'Tracking prompts')", "primary") + B("Edit topics", "aivStep=2;render()") + B("Edit prompts", "aivStep=1;render()") + B("AI Visibility Actions", "showActions()")) +
+      `<div class="grid g3"><div class="card kpi"><div class="v">${v.visibility}%</div><div class="l">Visibility (answers mentioning you)</div></div>
+       <div class="card kpi"><div class="v">${v.averageRank ?? "–"}</div><div class="l">Average rank when mentioned</div></div>
+       <div class="card kpi"><div class="v">${Object.entries(v.byPlatform).map(([p, x]) => `${x}%`).join(" · ") || "–"}</div><div class="l">${Object.keys(v.byPlatform).join(" · ")}</div></div></div>
+       <div class="grid g2"><div class="card"><h2>Share of voice</h2>${v.shareOfVoice.length ? v.shareOfVoice.map(([n, c]) => `<div style="margin:8px 0"><div class="row" style="justify-content:space-between"><span>${esc(n)}${n === D.project.name ? ' <span class="pill acc">you</span>' : ""}</span><span class="muted">${c}</span></div><div class="bar"><i style="width:${(c / max) * 100}%"></i></div></div>`).join("") : '<p class="muted">No brands mentioned.</p>'}</div>
+       <div class="card"><h2>Top cited sources</h2>${v.topSources.length ? `<table>${v.topSources.map(([d, c]) => `<tr><td>${esc(d)}</td><td>${c}</td></tr>`).join("")}</table>` : '<p class="muted">No URLs cited.</p>'}</div></div>
+       <div class="card"><h2>Prompts where you are missing (${v.gaps.length})</h2><table><tr><th>Platform</th><th>Prompt</th><th>Mentioned instead</th></tr>${v.gaps.map((g) => `<tr><td>${g.platform}</td><td>${esc(g.prompt)}</td><td>${esc(g.competitors.join(", ") || "–")}</td></tr>`).join("")}</table></div>
+       <div class="card"><h2>History</h2><table>${D.visibility.history.map((h) => `<tr><td>${new Date(h.at).toLocaleString()}</td><td>${h.visibility}%</td></tr>`).join("")}</table></div>`;
+  }
+  const view = aivStep === 1 ? 1 : 0; // 2 = topics view while results exist
+  const stepper = `<div class="steps">${["Choose topics", "Choose prompts", "Start tracking"].map((s, i) => `<button class="${i === view ? "on" : ""}" onclick="aivStep=${Math.min(i, 1)};render()">${i + 1}. ${s}</button>`).join("")}</div>`;
+  const back = v ? '<button onclick="aivStep=0;render()">Back to results</button>' : "";
+  if (view === 0) {
+    return header("AI Search Visibility", sub) + stepper +
+      `<div class="card"><h2>What should we track?</h2><p class="muted">Topic groups found from your site. Mark how close each is to what you sell: core topics get the most prompts.</p>
+       ${topics.length ? `<table>${topics.map((t, i) => `<tr><td>${esc(t.topic)}<div class="muted">${esc(t.why)}</div></td><td style="width:170px"><select onchange="setRelevance(${i},this.value)">${["core", "adjacent", "peripheral"].map((r) => `<option ${t.relevance === r ? "selected" : ""}>${r}</option>`).join("")}</select></td><td style="width:40px"><button class="sm" aria-label="Remove topic" onclick="dropTopic(${i})">×</button></td></tr>`).join("")}</table>` : '<p class="empty">No topics yet.</p>'}
+       <div class="row" style="margin-top:12px">${back}${B(topics.length ? "Find topics again" : "Find topics from my site", "run('topics',[],'Finding topics')")}${topics.length ? B("Continue", "aivStep=1;render()", "primary") : ""}</div></div>`;
+  }
+  return header("AI Search Visibility", sub) + stepper +
+    `<div class="card"><h2>Prompts to track</h2><p class="muted">Questions buyers ask AI assistants. Edit or remove any.</p>
+     ${prompts.length ? `<table>${prompts.map((q, i) => `<tr><td class="muted" style="width:180px">${esc(q.topic)}</td><td><input value="${esc(q.prompt)}" onchange="editPrompt(${i},this.value)"></td><td style="width:40px"><button class="sm" aria-label="Remove prompt" onclick="dropPrompt(${i})">×</button></td></tr>`).join("")}</table>` : '<p class="empty">No prompts yet.</p>'}
+     <div class="row" style="margin-top:12px"><button onclick="aivStep=${v ? 2 : 0};render()">Back</button><input id="np" type="number" min="1" max="150" value="${prompts.length || 10}" style="width:90px" aria-label="Number of prompts">${B(prompts.length ? "Regenerate prompts" : "Generate prompts", "run('prompts',[$('#np').value],'Writing prompts')")}${prompts.length ? B("Start tracking", "aivStep=0;run('track',[],'Tracking prompts')", "primary") : ""}</div></div>`;
+}
+const setRelevance = (i, r) => { const t = [...D.topics]; t[i] = { ...t[i], relevance: r }; saveData("topics.json", t); };
+const dropTopic = (i) => { const t = [...D.topics]; t.splice(i, 1); saveData("topics.json", t); };
+const editPrompt = (i, v) => { const p = [...D.prompts]; p[i] = { ...p[i], prompt: v }; saveData("prompts.json", p); };
+const dropPrompt = (i) => { const p = [...D.prompts]; p.splice(i, 1); saveData("prompts.json", p); };
+async function showActions() { const r = await run("actions", [], "Planning AI Visibility Actions"); if (r?.ok) modal(`<h2>AI Visibility Actions</h2><pre class="log" style="max-height:none">${esc(r.output)}</pre>`); }
+
+// ── Technical SEO ──
+let fixFilter = "all";
+function technical() {
+  const fx = D.fixes ?? [];
+  if (!fx.length) return header("Technical SEO", "Code optimization recommendations") +
+    `<div class="card"><p class="muted">${D.audit ? "Generate fixes from your latest audit." : "Run the website audit first."}</p>${D.audit ? B("Generate fixes", "run('fixes',['build'],'Generating fixes')", "primary") : '<a class="btn" href="#audit">Open Website Audit</a>'}</div>`;
+  const active = fx.filter((f) => f.enabled);
+  const shown = fx.filter((f) => fixFilter === "all" ? true : fixFilter === "active" ? f.enabled : fixFilter === "disabled" ? !f.enabled : f.category === fixFilter);
+  const byPage = {}; for (const f of shown) (byPage[f.page] ??= []).push(f);
+  const chip = (id, l, n) => `<button class="sm ${fixFilter === id ? "primary" : ""}" onclick="fixFilter='${id}';render()">${l} ${n}</button>`;
+  const desc = (f) => f.op === "setTitle" || f.op === "setMeta" ? `${esc(f.name ?? f.property)} → “${esc(f.value)}”` : f.op === "setLinkAttrs" ? `${esc(f.href)} ${esc(JSON.stringify(f.attrs))}` : f.op === "setImageAlt" ? `${esc(f.src)} alt=“${esc(f.value)}”` : f.op === "appendLink" ? `link “${esc(f.anchor)}” → ${esc(f.href)}` : f.op === "addJsonLd" ? `JSON-LD ${esc(f.value["@type"])}` : f.op === "unlink" ? `remove href ${esc(f.href)}` : esc(f.value ?? "");
+  return header("Technical SEO", "Code optimization recommendations", B("Regenerate fixes", "run('fixes',['build'],'Generating fixes')") + `<button class="primary" onclick="showSnippet()">Apply changes</button>`) +
+    `<div class="card"><div class="row">${chip("active", "Active", active.length)}${chip("disabled", "Disabled", fx.length - active.length)}${chip("all", "All", fx.length)}</div>
+     <div class="row" style="margin-top:8px">${Object.entries(FIX_LABELS).map(([k, l]) => chip(k, l, active.filter((f) => f.category === k).length)).join("")}</div></div>
+     ${Object.entries(byPage).map(([pg, fs]) => `<div class="card"><h2>${esc(pg)} <span class="pill">${fs.length}</span></h2><table>${fs.map((f) => `<tr><td style="width:190px"><span class="pill acc">${FIX_LABELS[f.category]}</span></td><td>${desc(f)}</td><td style="width:60px"><label class="switch"><input type="checkbox" ${f.enabled ? "checked" : ""} ${busy ? "disabled" : ""} onchange="run('fixes',[this.checked?'enable':'disable','${f.id}'],'Updating fix')"><span></span></label></td></tr>`).join("")}</table></div>`).join("") || '<div class="card empty">No fixes in this filter.</div>'}`;
+}
+function showSnippet() { modal(`<h2>Apply changes</h2><p>Add this tag to your site's <code>&lt;head&gt;</code>. It applies every enabled fix on matching pages; toggling a fix here updates it on the next page load.</p><code>&lt;script src="${location.origin}/fixes.js" defer&gt;&lt;/script&gt;</code><p class="muted">Search engines that do not run JavaScript will not see script-applied changes; for those, copy the fixes into your page templates.</p>`); }
+
+// ── Website Audit ──
+function audit() {
+  const a = D.audit;
+  if (!a) return header("Website Audit", "Technical SEO analysis") + `<div class="card">${B("Analyze my site", "run('audit',[],'Auditing site')", "primary")}</div>`;
+  const enabled = new Set((D.fixes ?? []).filter((f) => f.enabled).map((f) => f.category));
+  const FIXMAP = { title: "optimizeTitle", description: "optimizeDescription", openGraph: "addOpenGraph", canonical: "addCanonical", linkTarget: "modifyLinkTarget", linkTitle: "addLinkTitle", imageAlt: "addImageAlt", brokenLinks: "removeBrokenLinks", internalLinks: "addInternalLinks", structuredData: "optimizeForAiSearch" };
+  const c = a.crawlability;
+  return header("Website Audit", `Technical SEO analysis · ${a.coverage.crawled} of ${a.coverage.discovered} discovered pages · ${new Date(a.crawledAt).toLocaleString()}`, '<a class="btn" href="#technical">View fixes</a>' + B("Re-analyze", "run('audit',[],'Auditing site')", "primary")) +
+    `<div class="grid g3"><div class="card"><div class="grade">${a.grade}</div><div class="muted">Current grade</div></div>
+     <div class="card kpi"><div class="v">${Object.values(a.factors).filter((f) => !f.issues).length}/10</div><div class="l">Factors passing</div></div>
+     <div class="card kpi"><div class="v">${c.issues.length}</div><div class="l">Crawlability issues</div></div></div>
+     <div class="card"><h2>Technical SEO factors</h2><table><tr><th>Factor</th><th>Issues</th><th>Fix</th></tr>
+     ${Object.entries(a.factors).map(([k, f]) => `<tr><td>${esc(f.label)}</td><td>${f.issues ? `<span class="pill bad">${f.issues}</span>` : '<span class="pill good">Pass</span>'}</td><td>${!f.issues ? "—" : enabled.has(FIXMAP[k]) ? '<span class="pill acc">Fix ready</span>' : '<a href="#technical">Generate</a>'}</td></tr>`).join("")}</table></div>
+     <div class="card"><div class="head"><h2>Crawlability</h2>${B("Check now", "run('audit',[],'Auditing site')", "sm")}</div>
+     <p class="muted">robots.txt ${c.robotsTxt ? "found" : "missing"} · ${c.sitemapUrls} sitemap URLs · llms.txt ${c.llmsTxt ? "found" : "missing"}</p>
+     ${c.issues.length ? `<table>${c.issues.map((i) => `<tr><td><span class="pill ${/blocks|disallows|unreachable|not valid|HTML/.test(i) ? "bad" : "warn"}">${/blocks|disallows|unreachable|not valid|HTML/.test(i) ? "Blocker" : "Warning"}</span></td><td>${esc(i)}</td></tr>`).join("")}</table>` : '<p class="pill good">No issues</p>'}</div>
+     <div class="card"><h2>Pages</h2><table><tr><th>URL</th><th>Status</th><th>Words</th><th>Issues</th></tr>${a.pages.map((p) => `<tr><td>${esc(p.url)}</td><td>${p.status}</td><td>${p.words ?? "–"}</td><td>${Object.values(p.findings ?? {}).reduce((n, x) => n + x.length, 0)}</td></tr>`).join("")}</table></div>`;
+}
+
+// ── Keywords & Content ──
+let contentTab = "all";
+function content() {
+  const a = D.articles ?? [], n = (s) => a.filter((x) => x.status === s).length, p = D.project;
+  const rows = a.filter((x) => contentTab === "all" || x.status === contentTab).sort((x, y) => x.week - y.week);
+  const pill = { upcoming: "", ready: "warn", published: "good" };
+  return header("Keywords & Content Strategy", "High-impact keywords drive your content plan", B("Research 5 keywords", "run('keywords',[5],'Researching keywords')") + B(`Write next ${Math.min(2, n("upcoming")) || 2}`, "run('write',[2],'Writing articles')", "primary")) +
+    `<div class="grid g3">${[["Keywords", a.length], ["Pages created", n("ready") + n("published")], ["Ready to publish", n("ready")]].map(([l, v]) => `<div class="card kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("")}</div>
+     ${p.publishMode !== "auto" ? `<div class="card row" style="justify-content:space-between"><div><b>Auto-publish is off</b><div class="muted">Turn it on to publish one eligible article per scheduled run.</div></div><button onclick="saveProject({publishMode:'auto'})">Enable auto-publish</button></div>` : ""}
+     <div class="card"><div class="head"><div class="row">${["all", "upcoming", "ready", "published"].map((t) => `<button class="sm ${contentTab === t ? "primary" : ""}" onclick="contentTab='${t}';render()">${t[0].toUpperCase() + t.slice(1)} ${t === "all" ? a.length : n(t)}</button>`).join("")}</div>
+     <div class="row"><input id="kw" placeholder="Add a keyword" style="width:220px">${B("Add keyword", "run('add',[$('#kw').value],'Adding keyword')")}</div></div>
+     ${rows.length ? `<table><tr><th>Week</th><th>Keyword</th><th>Search volume</th><th>Title</th><th>Status</th><th></th></tr>${rows.map((x) => `<tr><td>W${x.week}</td><td>${esc(x.keyword)}<div class="muted">${esc(x.intent)} · ${esc(x.pageType)}</div></td><td class="muted">${x.searchVolume ?? "n/a"}</td><td>${x.hasContent ? `<a href="#content" onclick="viewArticle('${x.slug}')">${esc(x.title)}</a>` : esc(x.title)}</td><td><span class="pill ${pill[x.status]}">${x.status}</span>${x.rewrites?.length ? ` <span class="pill acc">${x.rewrites.length} rewrite</span>` : ""}</td>
+       <td style="text-align:right">${x.status === "ready" ? B("Publish", `run('publish',['${x.slug}'],'Publishing')`, "sm") : x.status === "published" ? B("Unpublish", `run('unpublish',['${x.slug}'],'Unpublishing')`, "sm") : ""}</td></tr>`).join("")}</table>` : '<p class="empty">No content found.</p>'}</div>`;
+}
+async function viewArticle(s) { const a = await (await fetch(`/app/article?slug=${encodeURIComponent(s)}`)).json(); modal(`<div class="row" style="justify-content:space-between"><span class="pill">${esc(a.keyword)}</span><button class="sm" onclick="$('#modal').style.display='none'">Close</button></div><div class="article">${a.html}</div>`); }
+
+// ── Settings ──
+function integrationBlock() {
+  const o = location.origin, p = D.project;
+  return `<h2>Custom site integration</h2><p class="muted">Fetch published articles from your site's code.</p>
+    <label>Article summaries (paginated)</label><code>${o}/api/v1/articles?page=1&amp;limit=10</code>
+    <label>One article</label><code>${o}/api/v1/articles/[slug]?format=html|markdown</code>
+    <label>Sitemap of published articles</label><code>${o}/sitemap.xml</code>
+    <label>Blog post path</label><input id="f-blogPath" value="${esc(p.blogPath)}"><p class="muted">Preview: ${esc(p.url.replace(/\/$/, ""))}${esc((p.blogPath || "/blog").replace(/\/$/, ""))}/my-post-slug</p>
+    <div class="setting"><div><b>Strip title and hero image in API body</b><div class="muted">Removes the first H1 and first image from article content.</div></div><label class="switch"><input type="checkbox" ${p.stripTitleAndHero ? "checked" : ""} onchange="saveProject({stripTitleAndHero:this.checked})"><span></span></label></div>
+    <p class="muted">Push instead of pull: set <code>PUBLISH_WEBHOOK_URL</code> and each publish POSTs the article to it.</p>`;
+}
+function settings() {
+  const p = D.project;
+  return header("Settings", "Project configuration") +
+    `<div class="card"><h2>Project information</h2><p class="muted">${esc(p.description)}</p><a class="btn" href="#onboarding" onclick="onboardStep=0">Edit business profile</a></div>
+     <div class="card"><h2>Publishing</h2>
+      <div class="setting"><div><b>Auto publish</b><div class="muted">Publishes one eligible article per run, Monday–Saturday. Schedule <code>node src/cli.js publish</code> with cron.</div></div><label class="switch"><input type="checkbox" ${p.publishMode === "auto" ? "checked" : ""} onchange="saveProject({publishMode:this.checked?'auto':'manual'})"><span></span></label></div>
+      ${integrationBlock()}<div class="row" style="margin-top:10px"><button class="primary" onclick="saveStep()">Save</button></div></div>
+     <div class="card"><h2>AI platforms</h2><p class="muted">Configured on the server: Claude needs <code>ANTHROPIC_API_KEY</code>; OpenAI needs <code>OPENAI_API_KEY</code> + <code>OPENAI_MODEL</code>; Gemini needs <code>GEMINI_API_KEY</code> + <code>GEMINI_MODEL</code>.</p></div>`;
+}
+
+function modal(html) { $("#modal-c").innerHTML = html; $("#modal").style.display = "flex"; }
+refresh();
+</script>
+</body>
+</html>
